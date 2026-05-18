@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Figurinhas da Copa — Simulador de Inflação (1990–2026)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;0,900;1,700&family=DM+Mono:wght@400;500&family=Barlow+Condensed:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#111008;--bg2:#1A1608;--surface:rgba(255,255,255,0.03);--line:rgba(255,220,80,0.12);--line2:rgba(255,220,80,0.28);--gold:#F0C040;--gold2:#FFE080;--gold3:#C89820;--green:#30B060;--green2:#80F0B0;--green3:#1A6035;--red:#D04040;--red2:#FF8080;--text:#F5EDD0;--muted:#8A7A50}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:19.2px}
+body{font-family:'Barlow Condensed',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;background-image:radial-gradient(ellipse at 10% 0%,rgba(240,192,64,.10) 0%,transparent 45%),radial-gradient(ellipse at 90% 100%,rgba(48,176,96,.08) 0%,transparent 40%)}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.45;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .07 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.wrap{position:relative;z-index:1;max-width:1480px;margin:0 auto;padding:28px 24px 60px}
+.hero{display:grid;grid-template-columns:1fr auto;align-items:end;gap:32px;padding:44px 48px;border:1px solid var(--line2);border-radius:24px;margin-bottom:28px;position:relative;overflow:hidden;background:rgba(255,220,80,.03)}
+.hero::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--green),var(--gold),var(--red))}
+.hero-label{font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:14px}
+.hero h1{font-family:'Playfair Display',serif;font-size:clamp(44px,6vw,80px);line-height:.92;letter-spacing:-1px;font-weight:900}
+.hero h1 em{color:var(--gold2);font-style:italic}
+.hero p{margin-top:18px;font-size:18px;line-height:1.65;color:rgba(245,237,208,.80);max-width:700px;font-weight:400}
+.hero-stamp{text-align:center;flex-shrink:0}
+.ball{font-size:96px;line-height:1;filter:drop-shadow(0 8px 24px rgba(240,192,64,.4));animation:float 4s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+.hero-stamp p{font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-top:10px}
+.notice{padding:14px 20px;border-radius:12px;background:rgba(240,192,64,.08);border:1px solid rgba(240,192,64,.25);font-size:14px;line-height:1.65;color:rgba(245,237,208,.85);margin-bottom:24px}
+.notice strong{color:var(--gold2)}
+.tabs{display:flex;gap:8px;margin-bottom:24px;overflow-x:auto;padding-bottom:4px;scrollbar-width:thin}
+.tab{flex-shrink:0;padding:12px 18px;border-radius:14px;border:1px solid var(--line);background:var(--surface);cursor:pointer;transition:all .25s;text-align:center;min-width:110px}
+.tab:hover{border-color:var(--line2);background:rgba(255,220,80,.05)}
+.tab.active{background:rgba(240,192,64,.14);border-color:var(--gold)}
+.tab.sp{border-color:rgba(208,64,64,.4);background:rgba(208,64,64,.06)}
+.tab.sp.active{background:rgba(208,64,64,.18);border-color:var(--red2)}
+.tab strong{display:block;font-family:'Playfair Display',serif;font-size:22px;color:var(--gold2);line-height:1}
+.tab.sp strong{color:var(--red2)}
+.tab small{display:block;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-top:4px}
+.tab .tp{display:block;font-family:'DM Mono',monospace;font-size:12px;color:var(--text);margin-top:5px}
+.main-grid{display:grid;grid-template-columns:380px 1fr;gap:22px;margin-bottom:22px}
+@media(max-width:1080px){.main-grid{grid-template-columns:1fr}}
+.wallet{border-radius:22px;padding:30px;position:relative;overflow:hidden;background:linear-gradient(145deg,#F5E8B0,#E0CA70);color:#1A1408;box-shadow:0 24px 48px -16px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.6)}
+.wallet::before{content:'';position:absolute;top:0;left:0;right:0;height:4px}
+.wallet::after{content:'⚽';position:absolute;bottom:-20px;right:-10px;font-size:140px;opacity:.08;pointer-events:none;filter:grayscale(1)}
+.wallet.sp{background:linear-gradient(145deg,#3A1010,#1A0808);color:#F5C0A0;box-shadow:0 24px 48px -16px rgba(139,0,0,.5)}
+.wallet.sp .wy{color:#FF8080}.wallet.sp .wh{color:#A05050}.wallet.sp .wlbl{color:#804040}
+.wallet.sp .wm{color:#FF8080}.wallet.sp .wb{background:rgba(255,100,100,.08)}
+.wallet.sp .wb .val{color:#FFAAAA}.wallet.sp .wb .lbl{color:#A06060}.wallet.sp .wd{background:rgba(255,100,100,.2)}
+.wy{font-family:'Playfair Display',serif;font-size:64px;font-weight:900;line-height:1;letter-spacing:-2px;color:#2A1E08}
+.wh{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#6A5020;margin-top:2px;font-weight:700}
+.wd{height:1px;background:rgba(43,30,8,.15);margin:20px 0}
+.wlbl{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#6A5020;font-weight:700;display:block;margin-bottom:4px}
+.wm{font-family:'DM Mono',monospace;font-size:40px;font-weight:500;color:#1A1408;line-height:1;margin-bottom:6px}
+.ws{font-family:'DM Mono',monospace;font-size:26px;font-weight:500;color:#1A1408;line-height:1}
+.wg{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.wb{background:rgba(43,30,8,.07);border-radius:12px;padding:12px 14px}
+.wb .val{font-family:'DM Mono',monospace;font-size:18px;font-weight:500;display:block;color:#1A1408}
+.wb .lbl{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#6A5020;display:block;margin-top:3px}
+.brow{display:flex;flex-direction:column;gap:10px;margin-top:20px}
+.btn{padding:16px 20px;border-radius:14px;border:none;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:800;letter-spacing:2px;text-transform:uppercase;transition:all .2s}
+.bp{background:linear-gradient(135deg,#2A1E08,#1A1408);color:var(--gold2);box-shadow:0 6px 18px -6px rgba(0,0,0,.4)}
+.bp:hover{transform:translateY(-2px)}.ba{background:linear-gradient(135deg,#1A3828,#0E2018);color:var(--green2)}
+.ba:hover{transform:translateY(-2px)}.br{background:rgba(43,30,8,.10);color:#2A1E08;border:1px solid rgba(43,30,8,.2)}
+.br:hover{background:rgba(43,30,8,.16)}.btn:disabled{opacity:.4;cursor:not-allowed;transform:none!important}
+.rp{display:flex;flex-direction:column;gap:16px}
+.hud{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.hb{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 12px;text-align:center}
+.hb .hv{font-family:'DM Mono',monospace;font-size:22px;font-weight:500;color:var(--gold2);display:block;line-height:1}
+.hb .hl{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);display:block;margin-top:5px}
+.ac{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:24px;flex:1}
+.at{font-family:'Playfair Display',serif;font-size:22px;color:var(--gold2);margin-bottom:16px;display:flex;justify-content:space-between;align-items:center}
+.ap{font-family:'DM Mono',monospace;font-size:36px;color:var(--gold);font-weight:500}
+.pt{height:28px;border-radius:30px;background:rgba(255,255,255,.06);overflow:hidden;margin-bottom:8px}
+.pf{height:100%;width:0%;border-radius:30px;transition:width .6s cubic-bezier(.4,0,.2,1);position:relative}
+.pf::after{content:'';position:absolute;right:0;top:0;bottom:0;width:30px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.3));border-radius:0 30px 30px 0}
+.pl{display:flex;justify-content:space-between;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:16px}
+.ai{padding:18px 20px;border-radius:14px;margin-bottom:14px;background:rgba(255,220,80,.05);border:1px solid var(--line2)}
+.aih{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.aif{font-size:24px}.ait{font-family:'Playfair Display',serif;font-size:20px;color:var(--gold2);font-weight:800;line-height:1}
+.ait small{display:block;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-family:'Barlow Condensed',sans-serif;margin-top:3px;font-weight:600}
+.aic{font-size:14px;line-height:1.65;color:rgba(245,237,208,.82);margin-bottom:12px}
+.ais{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}
+.ast{padding:10px 12px;border-radius:10px;background:rgba(255,255,255,.03);border:1px solid var(--line)}
+.ast .av{font-family:'DM Mono',monospace;font-size:17px;font-weight:500;color:var(--gold2);display:block}
+.ast .al{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);display:block;margin-top:3px}
+.asw{padding:18px 20px;border-radius:14px;background:rgba(208,64,64,.12);border:1px solid rgba(208,64,64,.4);font-size:15px;line-height:1.7;margin-bottom:14px}
+.asw strong{color:var(--red2)}
+.ml{max-height:180px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.ml::-webkit-scrollbar{width:4px}.ml::-webkit-scrollbar-thumb{background:var(--line2);border-radius:2px}
+.le{padding:12px 14px;border-radius:12px;background:rgba(255,255,255,.03);border:1px solid var(--line);font-size:14px;line-height:1.6;animation:li .3s ease}
+@keyframes li{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:none}}
+.lm{font-family:'DM Mono',monospace;color:var(--gold);font-size:12px;display:block;margin-bottom:5px}
+.lr{display:flex;gap:10px;flex-wrap:wrap;color:rgba(245,237,208,.7);font-size:13px}
+.lr span{flex:1;min-width:90px}.lmo{margin-top:7px;font-style:italic;color:var(--muted);font-size:12px}
+.cb{padding:18px 20px;border-radius:12px;background:rgba(48,176,96,.12);border-left:4px solid var(--green);font-size:14px;line-height:1.7;display:none;margin-top:12px}
+.cb strong{color:var(--green2);font-size:16px}.cb.show{display:block;animation:li .4s ease}
+.rs{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:26px;margin-bottom:22px}
+.st{font-family:'Playfair Display',serif;font-size:26px;color:var(--gold2);margin-bottom:6px}
+.ss{font-size:14px;color:var(--muted);margin-bottom:20px;line-height:1.5}
+.rb{display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap}
+.bd{padding:12px 22px;border-radius:12px;border:none;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:800;letter-spacing:2px;text-transform:uppercase;transition:all .2s}
+.bg{background:linear-gradient(135deg,var(--gold),var(--gold3));color:#1A1408;box-shadow:0 6px 18px -6px rgba(240,192,64,.4)}
+.bg:hover{transform:translateY(-2px)}.bg:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.brs{background:var(--surface);border:1px solid var(--line2);color:var(--text)}.brs:hover{background:rgba(255,255,255,.05)}
+.rg{display:flex;flex-direction:column;gap:12px}
+.rrow{display:grid;grid-template-columns:120px 1fr 130px 140px;align-items:center;gap:14px}
+.rl{font-family:'Playfair Display',serif;font-size:22px;color:var(--gold2);font-weight:800;line-height:1}
+.rl small{display:block;font-size:10px;letter-spacing:1.5px;font-family:'Barlow Condensed',sans-serif;color:var(--muted);text-transform:uppercase;margin-top:3px}
+.rtk{height:20px;border-radius:30px;background:rgba(255,255,255,.07);overflow:hidden}
+.rfi{height:100%;width:0%;border-radius:30px;transition:width .1s linear;position:relative}
+.rfi::after{content:'';position:absolute;right:0;top:0;bottom:0;width:20px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.3));border-radius:0 30px 30px 0}
+.rpc{font-family:'DM Mono',monospace;font-size:12px;color:var(--muted);text-align:right}
+.rmc{font-family:'DM Mono',monospace;font-size:15px;text-align:right;color:var(--text);transition:color .3s}
+.rmc.done{color:var(--green2);font-weight:700}
+.ts{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:26px;margin-bottom:22px}
+table{width:100%;border-collapse:collapse}
+th{background:rgba(240,192,64,.10);color:var(--gold2);padding:12px 14px;text-align:left;font-size:10px;letter-spacing:2.5px;text-transform:uppercase;font-weight:700;border-bottom:1px solid var(--line2)}
+td{padding:14px;border-bottom:1px solid var(--line);font-size:14px}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,.02)}
+.tag{display:inline-block;padding:4px 10px;border-radius:20px;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;font-weight:700}
+.tg{background:rgba(48,176,96,.15);color:var(--green2)}.tm{background:rgba(240,128,32,.15);color:#FFBA60}
+.tb{background:rgba(208,64,64,.15);color:var(--red2)}.tr2{background:rgba(208,64,64,.25);color:var(--red2);font-style:italic}
+.refs{margin-bottom:22px}
+.refs-g{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.ref{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:22px}
+.ref h4{font-family:'Playfair Display',serif;font-size:22px;color:var(--gold2);margin-bottom:10px}
+.ref p{font-size:15px;line-height:1.7;color:rgba(245,237,208,.80)}.ref strong{color:var(--gold2)}
+.qs{background:var(--surface);border:1px solid var(--line2);border-radius:20px;padding:26px;margin-bottom:22px}
+.qi{text-align:center;padding:30px 20px}
+.qi .ic{font-size:64px;margin-bottom:16px}
+.qi h3{font-family:'Playfair Display',serif;font-size:40px;color:var(--gold2);font-weight:900;margin-bottom:10px}
+.qi p{font-size:16px;color:rgba(245,237,208,.8);line-height:1.65;max-width:600px;margin:0 auto 24px}
+.bqs{padding:18px 36px;border-radius:14px;border:none;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:800;letter-spacing:2px;text-transform:uppercase;background:linear-gradient(135deg,var(--gold),var(--gold3));color:#1A1408;box-shadow:0 8px 24px -8px rgba(240,192,64,.5);transition:all .2s}
+.bqs:hover{transform:translateY(-2px)}
+.qb{display:none}.qb.show{display:block}
+.qh{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:10px}
+.qpt{flex:1;height:8px;border-radius:8px;background:rgba(255,255,255,.07);overflow:hidden;margin:0 16px}
+.qpf{height:100%;background:linear-gradient(90deg,var(--green),var(--gold));border-radius:8px;transition:width .4s}
+.qn{font-family:'DM Mono',monospace;font-size:13px;color:var(--muted)}
+.qsh{font-family:'DM Mono',monospace;font-size:16px;color:var(--gold2)}
+.qc{background:linear-gradient(135deg,rgba(240,192,64,.06),rgba(48,176,96,.04));border:1px solid var(--line2);border-radius:18px;padding:28px;margin-bottom:16px}
+.qt2{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:10px;display:block}
+.qtx{font-family:'Playfair Display',serif;font-size:24px;color:var(--text);line-height:1.3;font-weight:700}
+.qo{display:flex;flex-direction:column;gap:10px;margin-top:18px}
+.qop{text-align:left;padding:15px 20px;border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,.03);color:var(--text);cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:600;transition:all .2s;line-height:1.4}
+.qop:hover{background:rgba(255,220,80,.07);border-color:var(--line2);transform:translateX(4px)}
+.qop:disabled{cursor:default;transform:none}
+.qop.correct{background:rgba(48,176,96,.18);border-color:var(--green);color:var(--green2)}
+.qop.wrong{background:rgba(208,64,64,.15);border-color:var(--red);color:var(--red2)}
+.qex{padding:14px 18px;border-radius:10px;background:rgba(240,192,64,.07);border-left:3px solid var(--gold);font-size:14px;line-height:1.65;color:rgba(245,237,208,.85);margin-top:12px;display:none;animation:li .3s ease}
+.qex.show{display:block}.qex strong{color:var(--gold2)}
+.qnx{margin-top:14px;padding:14px 24px;border-radius:12px;border:none;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:800;letter-spacing:2px;text-transform:uppercase;background:linear-gradient(135deg,var(--gold),var(--gold3));color:#1A1408;display:none;animation:li .3s ease .1s both;transition:all .2s}
+.qnx.show{display:inline-block}.qnx:hover{transform:translateY(-2px)}
+.qr{display:none;text-align:center;padding:32px 20px}
+.qr.show{display:block;animation:li .4s ease}
+.rtr{font-size:72px;margin-bottom:16px}
+.rti{font-family:'Playfair Display',serif;font-size:44px;font-weight:900;color:var(--gold2);margin-bottom:10px}
+.rsc{font-family:'DM Mono',monospace;font-size:56px;color:var(--gold);font-weight:500;margin:10px 0}
+.rmsg{font-size:18px;color:rgba(245,237,208,.85);line-height:1.65;max-width:600px;margin:0 auto 24px}
+.rbg{display:inline-flex;align-items:center;gap:10px;padding:14px 28px;border-radius:30px;font-size:16px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:24px}
+.bg2{background:rgba(240,192,64,.18);border:2px solid var(--gold);color:var(--gold2)}
+.gg{background:rgba(48,176,96,.18);border:2px solid var(--green);color:var(--green2)}
+.rg2{background:rgba(208,64,64,.18);border:2px solid var(--red);color:var(--red2)}
+.rrv{display:flex;flex-direction:column;gap:10px;max-width:700px;margin:0 auto 24px;text-align:left}
+.rvi{padding:14px 18px;border-radius:12px;border:1px solid var(--line);font-size:14px;line-height:1.6}
+.rvi.ok{background:rgba(48,176,96,.08);border-color:rgba(48,176,96,.3)}
+.rvi.fail{background:rgba(208,64,64,.08);border-color:rgba(208,64,64,.3)}
+.rvi .rm{font-family:'DM Mono',monospace;font-size:12px;margin-bottom:4px;display:block}
+.rvi.ok .rm{color:var(--green2)}.rvi.fail .rm{color:var(--red2)}
+.bry{padding:16px 32px;border-radius:14px;border:none;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:800;letter-spacing:2px;text-transform:uppercase;background:var(--surface);border:1px solid var(--line2);color:var(--text);transition:all .2s;margin-right:12px}
+.bry:hover{background:rgba(255,255,255,.05)}
+.footer{text-align:center;padding:20px 0;font-size:13px;color:var(--muted);letter-spacing:.5px;border-top:1px solid var(--line)}
+.footer a{color:var(--gold);text-decoration:none;font-weight:700}
+.footer a:hover{color:var(--gold2);text-decoration:underline}
+@keyframes cf{0%{transform:translateY(0) rotate(0deg);opacity:1}100%{transform:translateY(-80px) rotate(360deg);opacity:0}}
+.cf{position:fixed;width:8px;height:8px;border-radius:2px;animation:cf 1.2s ease-out forwards;pointer-events:none;z-index:999}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="hero">
+  <div>
+    <div class="hero-label">Simulador de Inflação · Razões do Saber · 1990–2026</div>
+    <h1>Figurinhas da <em>Copa</em><br>&amp; o poder do dinheiro</h1>
+    <p>De 1990 a 2026: 9 copas, 36 anos de história econômica. A mesada é sempre <strong>5% do salário mínimo</strong> de cada época. Como o poder de compra de uma criança brasileira mudou em cada Copa do Mundo?</p>
+  </div>
+  <div class="hero-stamp"><div class="ball">⚽</div><p>1990 → 2026</p></div>
+</div>
+<div class="notice"><strong>📌 Como funciona:</strong> a mesada de cada copa é <strong>5% do salário mínimo daquele ano</strong> (dado real do Excel). O custo estimado usa ~2,2× o mínimo teórico — próximo do que se gasta sem trocas. Com trocas frequentes, o custo cai ~35%. A Copa de 1990 é <strong>caso especial</strong>: hiperinflação de +2.700% ao ano impossibilitava qualquer planejamento.</div>
+<div class="tabs">
+  <div class="tab sp active" onclick="sel(0,this)"><strong>1990</strong><small>Itália</small><span class="tp">⚠️ Hiperinf.</span></div>
+  <div class="tab" onclick="sel(1,this)"><strong>1994</strong><small>EUA</small><span class="tp">R$ 0,25 / pct</span></div>
+  <div class="tab" onclick="sel(2,this)"><strong>1998</strong><small>França</small><span class="tp">R$ 0,40 / pct</span></div>
+  <div class="tab" onclick="sel(3,this)"><strong>2002</strong><small>Coreia/Japão</small><span class="tp">R$ 0,50 / pct</span></div>
+  <div class="tab" onclick="sel(4,this)"><strong>2006</strong><small>Alemanha</small><span class="tp">R$ 0,60 / pct</span></div>
+  <div class="tab" onclick="sel(5,this)"><strong>2010</strong><small>África do Sul</small><span class="tp">R$ 0,75 / pct</span></div>
+  <div class="tab" onclick="sel(6,this)"><strong>2014</strong><small>Brasil</small><span class="tp">R$ 1,00 / pct</span></div>
+  <div class="tab" onclick="sel(7,this)"><strong>2018</strong><small>Rússia</small><span class="tp">R$ 2,00 / pct</span></div>
+  <div class="tab" onclick="sel(8,this)"><strong>2022</strong><small>Catar</small><span class="tp">R$ 4,00 / pct</span></div>
+  <div class="tab" onclick="sel(9,this)"><strong>2026</strong><small>EUA/CAN/MEX</small><span class="tp">R$ 7,00 / pct</span></div>
+</div>
+<div class="main-grid">
+  <div class="wallet" id="wcard">
+    <div class="wy" id="wYear">1990</div>
+    <div class="wh" id="wHost">COPA DO MUNDO · ITÁLIA</div>
+    <div class="wd"></div>
+    <span class="wlbl">Salário mínimo da época</span>
+    <div class="ws" id="wSal">variável</div>
+    <span class="wlbl" style="margin-top:10px">Mesada (5% do salário)</span>
+    <div class="wm" id="wMes">variável</div>
+    <div class="wg">
+      <div class="wb"><span class="val" id="wPri">variável</span><span class="lbl">Por pacote</span></div>
+      <div class="wb"><span class="val" id="wPPM">—</span><span class="lbl">Pacotes/mês</span></div>
+      <div class="wb"><span class="val" id="wCus">—</span><span class="lbl">Custo estimado</span></div>
+      <div class="wb"><span class="val" id="wEst">—</span><span class="lbl">Meses sem trocas</span></div>
+    </div>
+    <div class="brow">
+      <button class="btn bp" id="bm" onclick="avMes()">📅 Avançar 1 mês</button>
+      <button class="btn ba" id="ba" onclick="autoSim()">⚡ Simular até o fim</button>
+      <button class="btn br" onclick="reset()">↺ Recomeçar</button>
+    </div>
+  </div>
+  <div class="rp">
+    <div class="hud">
+      <div class="hb"><span class="hv" id="hM">0</span><span class="hl">Meses</span></div>
+      <div class="hb"><span class="hv" id="hP">0</span><span class="hl">Pacotes</span></div>
+      <div class="hb"><span class="hv" id="hF">0</span><span class="hl">Figurinhas</span></div>
+      <div class="hb"><span class="hv" id="hR">0</span><span class="hl">Repetidas</span></div>
+      <div class="hb"><span class="hv" id="hS">R$0</span><span class="hl">Gasto</span></div>
+    </div>
+    <div class="ac">
+      <div class="at">📚 Álbum da Copa<span class="ap" id="aPct">0%</span></div>
+      <div class="pt"><div class="pf" id="pFil"></div></div>
+      <div class="pl"><span>0%</span><span>25%</span><span>50%</span><span>75%</span><span>100%</span></div>
+      <div id="aInfo"></div>
+      <div class="ml" id="mLog"></div>
+      <div class="cb" id="cBan"></div>
+    </div>
+  </div>
+</div>
+<div class="rs">
+  <div class="st">🏁 Corrida das copas (1994–2026)</div>
+  <div class="ss">Cada copa com sua própria mesada de 5% do salário mínimo. 1990 excluída por hiperinflação. Mesmos números do simulador.</div>
+  <div class="rb">
+    <button class="bd bg" id="bRgo" onclick="startRace()">▶ Iniciar corrida</button>
+    <button class="bd brs" onclick="resetRace()">↺ Reiniciar</button>
+  </div>
+  <div class="rg" id="rGrid"></div>
+</div>
+<div class="ts">
+  <div class="st" style="margin-bottom:20px">📊 Tabela histórica completa (1990–2026)</div>
+  <table><thead><tr><th>Copa</th><th>País</th><th>Salário mín.</th><th>Mesada 5%</th><th>R$/pacote</th><th>Pcts/mês</th><th>Custo estimado</th><th>Meses sem troca</th><th>Meses c/ troca</th></tr></thead><tbody id="tBody"></tbody></table>
+</div>
+<div class="refs">
+  <div class="st" style="margin-bottom:16px">🧠 Para debater em sala</div>
+  <div class="refs-g">
+    <div class="ref"><h4>📉 De 1994 a 2026</h4><p>O pacote subiu de R$ 0,25 para R$ 7,00 — aumento de <strong>2.700%</strong>. O salário mínimo foi de R$ 64,79 para ~R$ 1.620 — aumento de ~2.400%. O preço do pacote cresceu <strong>proporcionalmente mais</strong> que a renda da família trabalhadora.</p></div>
+    <div class="ref"><h4>🏆 O ponto de ouro: 2010</h4><p>Em 2010, com salário mínimo de R$ 510 e mesada de R$ 25,50, o álbum levava apenas <strong>8 meses</strong>. Foi o melhor equilíbrio da história recente. Por que 2010 foi especial? O que mudou antes e depois?</p></div>
+    <div class="ref"><h4>💬 Pergunta para fechar</h4><p>Em 1990, a hiperinflação destruía o planejamento financeiro de qualquer família. Em 2026, o problema mudou: a inflação está controlada, mas o custo do lazer cresceu muito acima da renda. <strong>São problemas diferentes — mas ambos excluem?</strong></p></div>
+  </div>
+</div>
+<div class="qs" id="qSec">
+  <div class="qi" id="qInt">
+    <div class="ic">🏆</div>
+    <h3>Teste o conhecimento</h3>
+    <p>Vocês exploraram 36 anos de história econômica brasileira pelas figurinhas da Copa. Agora comprovem que entenderam — <strong>10 perguntas</strong> para passar de fase.</p>
+    <button class="bqs" onclick="startQ()">Iniciar questionário →</button>
+  </div>
+  <div class="qb" id="qBod">
+    <div class="qh">
+      <span class="qn" id="qNum">Pergunta 1 / 10</span>
+      <div class="qpt"><div class="qpf" id="qPro" style="width:0%"></div></div>
+      <span class="qsh" id="qSco">0 pts</span>
+    </div>
+    <div id="qCar"></div>
+  </div>
+  <div class="qr" id="qRes"></div>
+</div>
+<footer class="footer">Criado por <strong>Prof. Me. Christopher De Andrade Cardoso</strong> · <a href="https://portal.inspira.prof/" target="_blank">portal.inspira.prof</a></footer>
+</div>
+<script>
+const PS=5,FS=2.2,FC=1.35;
+const COPAS=[
+{year:1990,host:'Itália',flag:'🇮🇹',color:'#D04040',sal:'variável',mes:null,pri:null,tot:448,cus:null,mo:null,sp:true,ctx:'Era do Plano Collor e hiperinflação de +2.700% ao ano. Os preços mudavam todos os dias — completar um álbum com planejamento era impossível. Muitas famílias nem tentavam.',fatos:[{v:'448',l:'Figurinhas no álbum'},{v:'≈2.700%',l:'Inflação anual'},{v:'Impossível',l:'Prazo estimado'},{v:'Caso único',l:'Na história do Brasil'}]},
+{year:1994,host:'EUA',flag:'🇺🇸',color:'#30B060',sal:64.79,mes:3.24,pri:0.25,tot:444,cus:70,mo:22,sp:false,ctx:'Ano do Plano Real — o Brasil finalmente controlou a hiperinflação. O salário mínimo era R$ 64,79 e a mesada de 5% ficava em R$ 3,24. Com 12 pacotes por mês, o álbum levava 22 meses — mas pelo menos era possível planejar!',fatos:[{v:'444',l:'Figurinhas'},{v:'R$ 64,79',l:'Salário mínimo'},{v:'R$ 3,24',l:'Mesada (5%)'},{v:'~22 meses',l:'Para completar'}]},
+{year:1998,host:'França',flag:'🇫🇷',color:'#4A90D9',sal:130,mes:6.5,pri:0.40,tot:548,cus:140,mo:22,sp:false,ctx:'Crise do Real e crise asiática. O salário subiu para R$ 130, mas a inflação corroía. O álbum cresceu para 548 figurinhas. Com mesada de R$ 6,50, ainda eram necessários 22 meses — igual a 1994, mas o álbum era muito maior.',fatos:[{v:'548',l:'Figurinhas'},{v:'R$ 130',l:'Salário mínimo'},{v:'R$ 6,50',l:'Mesada (5%)'},{v:'~22 meses',l:'Para completar'}]},
+{year:2002,host:'Coreia/Japão',flag:'🇰🇷',color:'#E06020',sal:200,mes:10,pri:0.50,tot:576,cus:220,mo:22,sp:false,ctx:'Copa da virada com Ronaldo Fenômeno — pentacampeão! O salário mínimo chegou a R$ 200 e a mesada a R$ 10. O pacote ainda era barato (R$ 0,50), mas o álbum tinha 576 figurinhas. Resultado: 22 meses novamente.',fatos:[{v:'576',l:'Figurinhas'},{v:'R$ 200',l:'Salário mínimo'},{v:'R$ 10,00',l:'Mesada (5%)'},{v:'~22 meses',l:'Para completar'}]},
+{year:2006,host:'Alemanha',flag:'🇩🇪',color:'#F0C040',sal:350,mes:17.5,pri:0.60,tot:596,cus:280,mo:16,sp:false,ctx:'Era Lula, crescimento econômico e valorização real do salário mínimo. Com R$ 350 de salário e mesada de R$ 17,50, comprava 29 pacotes por mês. O prazo caiu para 16 meses — primeira melhora significativa em três copas.',fatos:[{v:'596',l:'Figurinhas'},{v:'R$ 350',l:'Salário mínimo'},{v:'R$ 17,50',l:'Mesada (5%)'},{v:'~16 meses',l:'Para completar'}]},
+{year:2010,host:'África do Sul',flag:'🇿🇦',color:'#30B060',sal:510,mes:25.5,pri:0.75,tot:638,cus:190,mo:8,sp:false,ctx:'O melhor momento da história recente! Salário mínimo em R$ 510, maior poder de compra histórico. Mesada de R$ 25,50, pacote a R$ 0,75 — 34 pacotes por mês. Apenas 8 meses para completar. O ponto de ouro.',fatos:[{v:'638',l:'Figurinhas'},{v:'R$ 510',l:'Salário mínimo'},{v:'R$ 25,50',l:'Mesada (5%)'},{v:'~8 meses ⭐',l:'Para completar'}]},
+{year:2014,host:'Brasil',flag:'🇧🇷',color:'#F0C040',sal:724,mes:36.2,pri:1.00,tot:640,cus:300,mo:8,sp:false,ctx:'A Copa era nossa! Salário mínimo R$ 724, mesada R$ 36,20. O pacote dobrou para R$ 1,00, mas a mesada também cresceu. O prazo se manteve em 8 meses — última copa com prazo razoável para a classe trabalhadora.',fatos:[{v:'640',l:'Figurinhas'},{v:'R$ 724',l:'Salário mínimo'},{v:'R$ 36,20',l:'Mesada (5%)'},{v:'~8 meses',l:'Para completar'}]},
+{year:2018,host:'Rússia',flag:'🇷🇺',color:'#C04040',sal:954,mes:47.7,pri:2.00,tot:682,cus:600,mo:13,sp:false,ctx:'Crise econômica pós-2014 e desvalorização do Real. O pacote dobrou para R$ 2,00 mas o salário cresceu pouco. Com mesada de R$ 47,70, o prazo saltou de 8 para 13 meses — primeira ruptura clara do equilíbrio de 2010.',fatos:[{v:'682',l:'Figurinhas'},{v:'R$ 954',l:'Salário mínimo'},{v:'R$ 47,70',l:'Mesada (5%)'},{v:'~13 meses ⚠️',l:'Para completar'}]},
+{year:2022,host:'Catar',flag:'🇶🇦',color:'#9040C0',sal:1212,mes:60.6,pri:4.00,tot:670,cus:1200,mo:20,sp:false,ctx:'Pós-pandemia, inflação global e crise de custos. O pacote subiu para R$ 4,00 — 16× mais que em 1994. Mesmo com salário de R$ 1.212 e mesada de R$ 60,60, o custo explodiu para ~R$ 1.200. Resultado: 20 meses de espera.',fatos:[{v:'670',l:'Figurinhas'},{v:'R$ 1.212',l:'Salário mínimo'},{v:'R$ 60,60',l:'Mesada (5%)'},{v:'~20 meses ⛔',l:'Para completar'}]},
+{year:2026,host:'EUA/CAN/MEX',flag:'🇺🇸',color:'#E06020',sal:1620,mes:81,pri:7.00,tot:700,cus:2200,mo:27,sp:false,ctx:'Copa nos EUA — projeção. Pacote estimado R$ 7,00 (28× mais que 1994!). Com salário mínimo de ~R$ 1.620 e mesada de R$ 81, seriam necessários 27 meses — mais de 2 anos de economia pura.',fatos:[{v:'700',l:'Figurinhas'},{v:'~R$ 1.620',l:'Salário mínimo (est.)'},{v:'~R$ 81',l:'Mesada (5%)'},{v:'~27 meses 🚨',l:'Para completar'}]}
+];
+const ppm=c=>c.mes?Math.floor(c.mes/c.pri):0;
+const pSem=c=>Math.round(Math.ceil(c.tot/PS)*FS);
+const pCom=c=>Math.round(Math.ceil(c.tot/PS)*FC);
+const mCom=c=>Math.ceil((pCom(c)*c.pri)/c.mes);
+let sim={i:0,mo:0,op:0,ow:0,re:0,sp:0,done:false};
+function sel(i,el){document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));el.classList.add('active');sim.i=i;reset();}
+function reset(){
+  sim.mo=0;sim.op=0;sim.ow=0;sim.re=0;sim.sp=0;sim.done=false;
+  const c=COPAS[sim.i];
+  const wc=document.getElementById('wcard');
+  wc.className='wallet'+(c.sp?' sp':'');
+  document.getElementById('wYear').textContent=c.year;
+  document.getElementById('wHost').textContent='COPA DO MUNDO · '+c.host.toUpperCase();
+  document.getElementById('wSal').textContent=c.sal?'R$ '+c.sal.toLocaleString('pt-BR'):'Variável';
+  document.getElementById('wMes').textContent=c.mes?'R$ '+c.mes.toFixed(2).replace('.',','):'Variável';
+  document.getElementById('wPri').textContent=c.pri?'R$ '+c.pri.toFixed(2).replace('.',','):'⚠️ variável';
+  document.getElementById('wPPM').textContent=c.sp?'—':ppm(c);
+  document.getElementById('wCus').textContent=c.sp?'—':'R$ '+c.cus.toLocaleString('pt-BR');
+  document.getElementById('wEst').textContent=c.sp?'—':'~'+c.mo+' meses';
+  const pf=document.getElementById('pFil');
+  pf.style.width='0%';
+  pf.style.background=c.sp?'linear-gradient(90deg,#8B1A1A,#D04040)':`linear-gradient(90deg,${c.color}88,${c.color})`;
+  document.getElementById('aPct').textContent='0%';
+  document.getElementById('bm').disabled=c.sp;
+  document.getElementById('ba').disabled=c.sp;
+  document.getElementById('mLog').innerHTML='';
+  document.getElementById('cBan').classList.remove('show');
+  updHUD();renderInfo();
+}
+function renderInfo(){
+  const c=COPAS[sim.i];const el=document.getElementById('aInfo');
+  if(c.sp){el.innerHTML=`<div class="asw"><strong>⚠️ Copa de 1990 — Caso especial: hiperinflação</strong><br><br>${c.ctx}<br><br><strong>Dados:</strong> ${c.tot} figurinhas · Inflação ≈2.700% ao ano · Planejamento financeiro era impossível.</div>`;return;}
+  el.innerHTML=`<div class="ai"><div class="aih"><span class="aif">${c.flag}</span><div><div class="ait">Copa ${c.year}<small>${c.host} · ${c.tot} figurinhas</small></div></div></div><div class="aic">${c.ctx}</div><div class="ais">${c.fatos.map(f=>`<div class="ast"><span class="av">${f.v}</span><span class="al">${f.l}</span></div>`).join('')}</div></div>`;
+}
+function avMes(){
+  if(sim.done)return;
+  const c=COPAS[sim.i];const tot=pSem(c);const pp=ppm(c);
+  const rem=tot-sim.op;const buy=Math.min(pp,rem);
+  let nw=0,re=0;
+  for(let p=0;p<buy;p++)for(let s=0;s<PS;s++){
+    if(Math.random()<sim.ow/c.tot&&sim.ow>0)re++;
+    else{nw++;sim.ow=Math.min(sim.ow+1,c.tot);}
+  }
+  sim.op+=buy;sim.re+=re;sim.sp+=buy*c.pri;sim.mo++;
+  const pct=Math.min(100,(sim.op/tot)*100);
+  document.getElementById('pFil').style.width=pct+'%';
+  document.getElementById('aPct').textContent=Math.floor(pct)+'%';
+  updHUD();addLog(nw,re,buy,pct);
+  if(sim.op>=tot){sim.done=true;showDone();document.getElementById('bm').disabled=true;document.getElementById('ba').disabled=true;}
+}
+function updHUD(){
+  document.getElementById('hM').textContent=sim.mo;
+  document.getElementById('hP').textContent=sim.op;
+  document.getElementById('hF').textContent=sim.ow;
+  document.getElementById('hR').textContent=sim.re;
+  document.getElementById('hS').textContent='R$'+sim.sp.toFixed(0);
+}
+function addLog(nw,re,pp,pct){
+  const c=COPAS[sim.i];
+  const mood=pct<30?'🙂 Bom avanço.':pct<60?'😐 Repetidas crescendo.':pct<85?'😤 Cada nova é difícil.':'😩 Fase final.';
+  const el=document.createElement('div');el.className='le';
+  el.innerHTML=`<span class="lm">MÊS ${sim.mo} · ${Math.floor(pct)}%</span><div class="lr"><span>📦 ${pp} pacotes</span><span>✅ ${nw} novas</span><span>🔁 ${re} rep.</span><span>💸 R$${(pp*c.pri).toFixed(0)}</span></div><div class="lmo">${mood}</div>`;
+  document.getElementById('mLog').prepend(el);
+}
+function showDone(){
+  const c=COPAS[sim.i];const b=document.getElementById('cBan');
+  b.innerHTML=`<strong>🏆 Álbum completo! ${c.year}</strong><br><br>Concluído em <strong>${sim.mo} meses</strong>${sim.mo>12?' ('+( sim.mo/12).toFixed(1)+' anos)':''}.<br>💸 Total gasto: <strong>R$ ${sim.sp.toFixed(0)}</strong> com mesada de R$ ${c.mes.toFixed(2).replace('.',',')}.<br><br><em style="color:var(--green2)">${sim.mo<=8?'Excelente! Prazo acessível.':sim.mo<=13?'Esforço razoável — custo já crescia.':sim.mo<=20?'Quase 2 anos. O lazer encareceu.':'Mais de 2 anos. Completar virou privilégio.'}</em>`;
+  b.classList.add('show');confetti();
+}
+function autoSim(){
+  if(sim.done)return;
+  document.getElementById('bm').disabled=true;document.getElementById('ba').disabled=true;
+  let t=0;
+  function s(){if(sim.done||t>200)return;avMes();t++;const sp=sim.mo<4?280:sim.mo<10?150:sim.mo<20?80:40;if(!sim.done)setTimeout(s,sp);}
+  setTimeout(s,80);
+}
+let raceT=null;
+function buildRace(){
+  const cc=COPAS.filter(c=>!c.sp);
+  document.getElementById('rGrid').innerHTML=cc.map((c,i)=>`<div class="rrow"><div class="rl">${c.flag} ${c.year}<small>${c.host.split('/')[0]}</small></div><div><div class="rtk"><div class="rfi" id="rf${i}" style="background:${c.color};width:0%"></div></div></div><div class="rpc">mesada R$${c.mes.toFixed(2).replace('.',',')}</div><div class="rmc" id="rm${i}">— meses</div></div>`).join('');
+}
+function startRace(){
+  if(raceT)return;document.getElementById('bRgo').disabled=true;
+  const cc=COPAS.filter(c=>!c.sp);
+  const st=cc.map(c=>({op:0,tot:pSem(c),pp:ppm(c),mo:0,done:false}));
+  raceT=setInterval(()=>{
+    let all=true;
+    st.forEach((s,i)=>{
+      if(s.done)return;all=false;
+      const buy=Math.min(s.pp,s.tot-s.op);s.op+=buy;s.mo++;
+      const pct=Math.min(100,(s.op/s.tot)*100);
+      document.getElementById('rf'+i).style.width=pct+'%';
+      document.getElementById('rm'+i).textContent=s.mo+(s.mo===1?' mês':' meses');
+      if(s.op>=s.tot){s.done=true;document.getElementById('rm'+i).textContent='✓ '+s.mo+' meses';document.getElementById('rm'+i).classList.add('done');}
+    });
+    if(all){clearInterval(raceT);raceT=null;}
+  },120);
+}
+function resetRace(){if(raceT){clearInterval(raceT);raceT=null;}document.getElementById('bRgo').disabled=false;buildRace();}
+function buildTable(){
+  document.getElementById('tBody').innerHTML=COPAS.map(c=>{
+    if(c.sp)return`<tr><td><strong>${c.year}</strong></td><td>${c.flag} ${c.host}</td><td colspan="7"><span class="tag tr2">⚠️ Hiperinflação — cálculo impossível</span></td></tr>`;
+    const cls=c.mo<=8?'tg':c.mo<=16?'tm':'tb';
+    const pow=c.mo<=8?'ALTO':c.mo<=16?'MÉDIO':c.mo<=22?'BAIXO':'MUITO BAIXO';
+    return`<tr><td><strong>${c.year}</strong></td><td>${c.flag} ${c.host}</td><td style="font-family:'DM Mono',monospace">R$ ${c.sal.toLocaleString('pt-BR')}</td><td style="font-family:'DM Mono',monospace">R$ ${c.mes.toFixed(2).replace('.',',')}</td><td style="font-family:'DM Mono',monospace">R$ ${c.pri.toFixed(2).replace('.',',')}</td><td style="font-family:'DM Mono',monospace">${ppm(c)}</td><td style="font-family:'DM Mono',monospace">R$ ${c.cus.toLocaleString('pt-BR')}</td><td><span class="tag ${cls}">~${c.mo} meses</span></td><td><span class="tag tg">~${mCom(c)} meses</span></td></tr>`;
+  }).join('');
+}
+function confetti(){
+  const cl=['#F0C040','#30B060','#D04040','#F08020','#80C0FF'];
+  for(let i=0;i<30;i++)setTimeout(()=>{const el=document.createElement('div');el.className='cf';el.style.cssText=`left:${20+Math.random()*60}%;top:${30+Math.random()*40}%;background:${cl[Math.floor(Math.random()*cl.length)]};animation-duration:${.8+Math.random()*.8}s;animation-delay:${Math.random()*.3}s`;document.body.appendChild(el);setTimeout(()=>el.remove(),2000);},i*25);
+}
+const QUIZ=[
+  {q:'Por que é impossível calcular o custo do álbum da Copa de 1990 com precisão?',opts:['O álbum de 1990 não existia no Brasil','A hiperinflação fazia os preços mudarem todo dia — planejamento era inútil','O Banco Central proibiu a venda de figurinhas','As figurinhas eram importadas e caríssimas'],cor:1,ex:'<strong>Correto!</strong> Em 1990, o Brasil vivia o Plano Collor com inflação de +2.700% ao ano. Os preços podiam mudar várias vezes na semana. Qualquer planejamento financeiro era impossível — quando você juntava dinheiro suficiente, o preço já tinha subido.'},
+  {q:'Qual plano econômico criou a estabilidade que tornou possível planejar comprar figurinhas a partir de 1994?',opts:['Plano Cruzado (1986)','Plano Collor (1990)','Plano Real (1994)','Plano Bresser (1987)'],cor:2,ex:'<strong>Correto!</strong> O Plano Real, lançado em julho de 1994 pelo ministro FHC, criou o Real e acabou com a hiperinflação. Pela primeira vez em décadas, uma criança podia planejar comprar figurinhas ao longo dos meses sem medo dos preços dispararem.'},
+  {q:'Qual foi a Copa com o MELHOR poder de compra para completar o álbum — menor prazo em relação à mesada de 5% do salário?',opts:['1994 — primeiro Real','2006 — governo Lula','2010 — pré-Copa do Brasil','2014 — Copa no Brasil'],cor:2,ex:'<strong>Correto!</strong> Em 2010, com salário mínimo de R$ 510 e mesada de R$ 25,50, era possível completar o álbum em apenas <strong>8 meses</strong>. Foi o ponto de ouro — maior poder de compra histórico combinado com pacote ainda relativamente barato (R$ 0,75).'},
+  {q:'Em 1994, qual era o salário mínimo e a mesada de 5% que uma criança teria para as figurinhas?',opts:['Salário R$ 130, mesada R$ 6,50','Salário R$ 64,79, mesada R$ 3,24','Salário R$ 200, mesada R$ 10','Salário R$ 350, mesada R$ 17,50'],cor:1,ex:'<strong>Correto!</strong> Em 1994, o salário mínimo recém-criado com o Plano Real era R$ 64,79. A mesada de 5% era R$ 3,24. Com pacote a R$ 0,25, dava para comprar 12 pacotes por mês — precisando de 22 meses para completar.'},
+  {q:'O preço do pacote subiu de R$ 0,25 (1994) para R$ 7,00 (2026). Qual é o percentual de aumento?',opts:['Cerca de 500%','Cerca de 1.300%','Cerca de 2.700%','Cerca de 200%'],cor:2,ex:'<strong>Correto!</strong> (7,00 ÷ 0,25 − 1) × 100 = 2.700%. O pacote multiplicou 28 vezes em valor. Isso é muito acima do aumento do salário mínimo no mesmo período (~2.400%) — um exemplo claro de <strong>inflação setorial</strong>.'},
+  {q:'O que é "inflação setorial"?',opts:['Inflação que afeta só o setor público','Quando um produto ou setor sobe muito acima da inflação geral da economia','Quando a inflação varia entre regiões do país','Inflação causada por um setor industrial específico'],cor:1,ex:'<strong>Correto!</strong> Inflação setorial ocorre quando preços de um produto ou setor crescem muito além da média geral (IPCA). As figurinhas são exemplo perfeito: subiram 2.700% de 1994 a 2026, enquanto o IPCA acumulou ~600% no mesmo período.'},
+  {q:'Em que Copa ocorreu a primeira grande ruptura — quando o prazo saltou de 8 para mais de 10 meses após 2010?',opts:['2014 — Brasil','2018 — Rússia','2022 — Catar','2026 — EUA'],cor:1,ex:'<strong>Correto!</strong> Em 2018, com a crise econômica pós-2014 e desvalorização do Real, o pacote dobrou para R$ 2,00 mas o salário cresceu pouco. O prazo saltou de 8 para 13 meses — primeira ruptura clara do equilíbrio conquistado em 2010.'},
+  {q:'Em 2022, quanto custava estimar o álbum do Catar sem trocas, com mesada de 5% do salário (R$ 60,60)?',opts:['~R$ 300 em ~5 meses','~R$ 600 em ~10 meses','~R$ 1.200 em ~20 meses','~R$ 2.200 em ~36 meses'],cor:2,ex:'<strong>Correto!</strong> O custo estimado era ~R$ 1.200. Com mesada de R$ 60,60, eram necessários ~20 meses. Isso representa mais que o dobro do prazo de 2010, com custo 6× maior — mesmo o salário mínimo tendo dobrado no período.'},
+  {q:'Por que completar um álbum com trocas de figurinhas é economicamente diferente de completar sem trocar?',opts:['As trocas aumentam o custo total','Quem troca cria uma rede que reduz os pacotes necessários em ~35%','As trocas são proibidas pela Panini','As trocas não afetam o custo — é só diversão'],cor:1,ex:'<strong>Correto!</strong> Com trocas frequentes, você elimina repetidas com amigos, reduzindo os pacotes necessários em ~35%. Mas há um componente social importante: ao trocar figurinhas, crianças praticam negociação, percebem valor de troca e constroem redes sociais — conceitos econômicos reais.'},
+  {q:'Comparando 1994 e 2026: tanto o salário quanto o pacote subiram muito. O que podemos concluir sobre o poder de compra para o álbum?',opts:['Melhorou — o salário subiu mais que o pacote','Ficou igual — os dois subiram na mesma proporção','Piorou — o preço do pacote subiu proporcionalmente mais que o salário','Não dá para comparar — são épocas muito diferentes'],cor:2,ex:'<strong>Correto!</strong> O salário mínimo subiu ~2.400% (de R$ 64,79 para ~R$ 1.620), mas o pacote subiu ~2.700% (de R$ 0,25 para R$ 7,00). O pacote ganhou da renda — por isso em 1994 levavam 22 meses e em 2026 levam 27 meses, mesmo com salário muito maior. O lazer da Copa ficou relativamente mais caro.'}
+];
+let qi=0,qs=0,qa=[];
+function startQ(){qi=0;qs=0;qa=[];document.getElementById('qInt').style.display='none';document.getElementById('qRes').classList.remove('show');document.getElementById('qBod').classList.add('show');renderQ();document.getElementById('qSec').scrollIntoView({behavior:'smooth'});}
+function renderQ(){
+  const q=QUIZ[qi];
+  document.getElementById('qNum').textContent='Pergunta '+(qi+1)+' / '+QUIZ.length;
+  document.getElementById('qPro').style.width=(qi/QUIZ.length*100)+'%';
+  document.getElementById('qSco').textContent=qs+' pts';
+  document.getElementById('qCar').innerHTML=`<div class="qc"><span class="qt2">Pergunta ${qi+1} de ${QUIZ.length}</span><div class="qtx">${q.q}</div><div class="qo">${q.opts.map((o,i)=>`<button class="qop" onclick="ansQ(${i})">${String.fromCharCode(65+i)}) ${o}</button>`).join('')}</div><div class="qex" id="qEx">${q.ex}</div></div><button class="qnx" id="qNx" onclick="nxtQ()">${qi<QUIZ.length-1?'Próxima pergunta →':'Ver resultado →'}</button>`;
+}
+function ansQ(i){
+  const q=QUIZ[qi];document.querySelectorAll('.qop').forEach(o=>o.disabled=true);
+  const ok=i===q.cor;
+  document.querySelectorAll('.qop')[i].classList.add(ok?'correct':'wrong');
+  if(!ok)document.querySelectorAll('.qop')[q.cor].classList.add('correct');
+  if(ok)qs+=10;
+  qa.push({ok,q:q.q,ch:q.opts[i],ri:q.opts[q.cor]});
+  document.getElementById('qEx').classList.add('show');
+  document.getElementById('qSco').textContent=qs+' pts';
+  document.getElementById('qNx').classList.add('show');
+}
+function nxtQ(){qi++;if(qi<QUIZ.length)renderQ();else showRes();}
+function showRes(){
+  document.getElementById('qBod').classList.remove('show');
+  const pct=qs/(QUIZ.length*10)*100;
+  let tr,bg,msg;
+  if(pct>=100){tr='🏆';bg='bg2';msg='Perfeito! Vocês dominaram 36 anos de história econômica. Entendem inflação, poder de compra e hiperinflação como economistas.';}
+  else if(pct>=70){tr='🥈';bg='gg';msg='Muito bem! A maioria certa. Revisem especialmente a comparação entre inflação geral e inflação setorial.';}
+  else{tr='🔄';bg='rg2';msg='Algumas questões precisam de revisão. Voltem ao simulador, explorem as copas e tentem de novo!';}
+  const rev=qa.map((a,i)=>`<div class="rvi ${a.ok?'ok':'fail'}"><span class="rm">${a.ok?'✓ CORRETO':'✗ ERRADO'} — Pergunta ${i+1}</span><div style="color:rgba(245,237,208,.75);font-size:13px">${QUIZ[i].q.substring(0,90)}...</div>${!a.ok?`<div style="color:var(--green2);font-size:12px;margin-top:4px">✓ Correto: ${a.ri}</div>`:''}</div>`).join('');
+  document.getElementById('qRes').innerHTML=`<div class="rtr">${tr}</div><div class="rti">${pct>=70?'Fase concluída!':'Tente de novo'}</div><div class="rsc">${qs} / ${QUIZ.length*10} pts</div><div class="rbg ${bg}">${pct>=100?'🏆 APROVADO COM LOUVOR':pct>=70?'✅ APROVADO':'🔄 REVISAR'}</div><div class="rmsg">${msg}</div><div class="rrv">${rev}</div><button class="bry" onclick="retryQ()">↺ Tentar de novo</button>${pct>=70?`<button class="bqs" onclick="alert('Parabéns! Levem ao professor. Pontuação: ${qs}/${QUIZ.length*10} ✓')">✓ Confirmar aprovação</button>`:''}`;
+  document.getElementById('qRes').classList.add('show');
+  if(pct>=100)confetti();
+}
+function retryQ(){document.getElementById('qRes').classList.remove('show');startQ();}
+buildRace();buildTable();reset();
+</script>
+</body>
+</html>
